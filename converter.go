@@ -1,13 +1,27 @@
 package main
 
 import (
-	"fmt"
+	"context"
 	"log"
+	"net"
 	"net/http"
+
 	"github.com/PuerkitoBio/goquery"
+	"github.com/kelgendy1204/currency-converter/proto"
+	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-func scrapeCurrencyConverter() {
+type server struct {
+	currencyconverter.CurrencyServer
+}
+
+func (s *server) Convert(ctx context.Context, in *emptypb.Empty) (*currencyconverter.ConvertValue, error) {
+	currencyValue := scrapeCurrencyConverter()
+	return &currencyconverter.ConvertValue{Value: currencyValue}, nil
+}
+
+func scrapeCurrencyConverter() string {
 	res, err := http.Get("https://www.currency.me.uk/convert/usd/egp")
 
 	// Request the HTML page.
@@ -28,9 +42,31 @@ func scrapeCurrencyConverter() {
 	}
 
 	currencyValue, _ := doc.Find("input#answer").Attr("value")
-	fmt.Println(currencyValue);
+
+	return currencyValue
+}
+
+func setupServer() {
+	lis, err := net.Listen("tcp", ":9000")
+
+	if err != nil {
+		panic(err)
+	}
+
+	defer lis.Close()
+
+	s := server{}
+
+	grpcServer := grpc.NewServer()
+	currencyconverter.RegisterCurrencyServer(grpcServer, &s)
+
+	log.Printf("server listening at %v", lis.Addr())
+
+	if err := grpcServer.Serve(lis); err != nil {
+		panic(err)
+	}
 }
 
 func main() {
-	scrapeCurrencyConverter()
+	setupServer()
 }

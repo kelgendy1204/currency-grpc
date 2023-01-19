@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+package currencyconverter;
+
+option go_package = "./currencyconverter";
+
+service Currency {
+    rpc Convert (google.protobuf.Empty) returns (ConvertValue) {}
+}
+
+message ConvertValue {
+    string value = 1;
+}
