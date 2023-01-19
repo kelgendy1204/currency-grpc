@@ -2,9 +2,9 @@ syntax = "proto3";
 
 import "google/protobuf/empty.proto";
 
-package currencyconverter;
+package service;
 
-option go_package = "./currencyconverter";
+option go_package = "./service";
 
 service Currency {
     rpc Convert (google.protobuf.Empty) returns (ConvertValue) {}

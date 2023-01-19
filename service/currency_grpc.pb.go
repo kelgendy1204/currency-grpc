@@ -4,7 +4,7 @@
 // - protoc             v3.21.12
 // source: currency.proto
 
-package currencyconverter
+package service
 
 import (
 	context "context"
@@ -36,7 +36,7 @@ func NewCurrencyClient(cc grpc.ClientConnInterface) CurrencyClient {
 
 func (c *currencyClient) Convert(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ConvertValue, error) {
 	out := new(ConvertValue)
-	err := c.cc.Invoke(ctx, "/currencyconverter.Currency/Convert", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/service.Currency/Convert", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -81,7 +81,7 @@ func _Currency_Convert_Handler(srv interface{}, ctx context.Context, dec func(in
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/currencyconverter.Currency/Convert",
+		FullMethod: "/service.Currency/Convert",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CurrencyServer).Convert(ctx, req.(*emptypb.Empty))
@@ -93,7 +93,7 @@ func _Currency_Convert_Handler(srv interface{}, ctx context.Context, dec func(in
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Currency_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "currencyconverter.Currency",
+	ServiceName: "service.Currency",
 	HandlerType: (*CurrencyServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
