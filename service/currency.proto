@@ -1,13 +1,16 @@
 syntax = "proto3";
 
-import "google/protobuf/empty.proto";
-
 package service;
 
 option go_package = "./service";
 
 service Currency {
-    rpc Convert (google.protobuf.Empty) returns (ConvertValue) {}
+    rpc Convert (ConvertInput) returns (ConvertValue) {}
+}
+
+message ConvertInput {
+    string from = 1;
+    string to = 2;
 }
 
 message ConvertValue {

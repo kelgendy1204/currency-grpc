@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v3.21.12
-// source: currency.proto
+// source: service/currency.proto
 
 package service
 
@@ -11,7 +11,6 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -23,7 +22,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CurrencyClient interface {
-	Convert(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ConvertValue, error)
+	Convert(ctx context.Context, in *ConvertInput, opts ...grpc.CallOption) (*ConvertValue, error)
 }
 
 type currencyClient struct {
@@ -34,7 +33,7 @@ func NewCurrencyClient(cc grpc.ClientConnInterface) CurrencyClient {
 	return &currencyClient{cc}
 }
 
-func (c *currencyClient) Convert(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ConvertValue, error) {
+func (c *currencyClient) Convert(ctx context.Context, in *ConvertInput, opts ...grpc.CallOption) (*ConvertValue, error) {
 	out := new(ConvertValue)
 	err := c.cc.Invoke(ctx, "/service.Currency/Convert", in, out, opts...)
 	if err != nil {
@@ -47,7 +46,7 @@ func (c *currencyClient) Convert(ctx context.Context, in *emptypb.Empty, opts ..
 // All implementations must embed UnimplementedCurrencyServer
 // for forward compatibility
 type CurrencyServer interface {
-	Convert(context.Context, *emptypb.Empty) (*ConvertValue, error)
+	Convert(context.Context, *ConvertInput) (*ConvertValue, error)
 	mustEmbedUnimplementedCurrencyServer()
 }
 
@@ -55,7 +54,7 @@ type CurrencyServer interface {
 type UnimplementedCurrencyServer struct {
 }
 
-func (UnimplementedCurrencyServer) Convert(context.Context, *emptypb.Empty) (*ConvertValue, error) {
+func (UnimplementedCurrencyServer) Convert(context.Context, *ConvertInput) (*ConvertValue, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Convert not implemented")
 }
 func (UnimplementedCurrencyServer) mustEmbedUnimplementedCurrencyServer() {}
@@ -72,7 +71,7 @@ func RegisterCurrencyServer(s grpc.ServiceRegistrar, srv CurrencyServer) {
 }
 
 func _Currency_Convert_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
+	in := new(ConvertInput)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -84,7 +83,7 @@ func _Currency_Convert_Handler(srv interface{}, ctx context.Context, dec func(in
 		FullMethod: "/service.Currency/Convert",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CurrencyServer).Convert(ctx, req.(*emptypb.Empty))
+		return srv.(CurrencyServer).Convert(ctx, req.(*ConvertInput))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -102,5 +101,5 @@ var Currency_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "currency.proto",
+	Metadata: "service/currency.proto",
 }

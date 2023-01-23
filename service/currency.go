@@ -6,15 +6,17 @@ import (
 	"net/http"
 
 	"github.com/PuerkitoBio/goquery"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 type Server struct {
 	CurrencyServer
 }
 
-func scrapeCurrencyConverter() string {
-	res, err := http.Get("https://www.currency.me.uk/convert/usd/egp")
+func scrapeCurrencyConverter(convertInput *ConvertInput) string {
+	fromCurrency := convertInput.From
+	toCurrency := convertInput.To
+
+	res, err := http.Get("https://www.currency.me.uk/convert/" + fromCurrency + "/" + toCurrency)
 
 	// Request the HTML page.
 	if err != nil {
@@ -24,13 +26,13 @@ func scrapeCurrencyConverter() string {
 	defer res.Body.Close()
 
 	if res.StatusCode != 200 {
-		log.Fatalf("status code error: %d %s", res.StatusCode, res.Status)
+		log.Printf("status code error: %d %s", res.StatusCode, res.Status)
 	}
 
 	// Load the HTML document
 	doc, err := goquery.NewDocumentFromReader(res.Body)
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
 	}
 
 	currencyValue, _ := doc.Find("input#answer").Attr("value")
@@ -38,7 +40,7 @@ func scrapeCurrencyConverter() string {
 	return currencyValue
 }
 
-func (s *Server) Convert(ctx context.Context, in *emptypb.Empty) (*ConvertValue, error) {
-	currencyValue := scrapeCurrencyConverter()
+func (s *Server) Convert(ctx context.Context, convertInput *ConvertInput) (*ConvertValue, error) {
+	currencyValue := scrapeCurrencyConverter(convertInput)
 	return &ConvertValue{Value: currencyValue}, nil
 }
