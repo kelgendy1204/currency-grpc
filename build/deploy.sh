@@ -40,12 +40,6 @@ server_deploy() {
 
     docker network create --driver bridge application-network || true
 
-    docker container run -d --name migrations \
-        --network application-network \
-        --entrypoint /bin/sh \
-        --rm $REGISTRY:latest \
-        -c 'npm run migrations'
-
     docker stop currency-grpc || true
     docker rm currency-grpc || true
     docker container run -d --name currency-grpc \
