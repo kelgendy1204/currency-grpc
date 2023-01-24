@@ -1,6 +1,6 @@
 #!/bin/bash
 
-REGISTRY=cloud.canister.io:5000/elgendy1204/currency-grpc
+REGISTRY=registry.gitlab.com/sales-cms-dashboard/currency-grpc
 
 main_folder_check() {
     if [[ ! -f "./go.mod" ]]; then
