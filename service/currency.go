@@ -2,8 +2,10 @@ package service
 
 import (
 	context "context"
+	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -13,6 +15,7 @@ type Server struct {
 }
 
 func scrapeCurrencyConverter(convertInput *ConvertInput) string {
+	fmt.Println("Fetch online")
 	fromCurrency := convertInput.From
 	toCurrency := convertInput.To
 
@@ -40,7 +43,43 @@ func scrapeCurrencyConverter(convertInput *ConvertInput) string {
 	return currencyValue
 }
 
+type currencyData struct {
+	time time.Time
+	value string
+}
+
+func getCurrencyFetcher() func(*ConvertInput) string {
+	cache := make(map[string]currencyData)
+
+	return func(convertInput *ConvertInput) string {
+		currencyKey := convertInput.From + "-" + convertInput.To
+		val, found := cache[currencyKey]
+		currentTime := time.Now()
+
+		if found {
+			durationHours := currentTime.Sub(val.time).Hours()
+
+			if durationHours > 6 {
+				val.time = currentTime
+				val.value = scrapeCurrencyConverter(convertInput)
+			}
+
+			return val.value
+		}
+
+		currencyValue := scrapeCurrencyConverter(convertInput)
+
+		data := currencyData { time: currentTime, value: currencyValue }
+
+		cache[currencyKey] = data
+
+		return currencyValue
+	}
+}
+
+var fetchCurrency = getCurrencyFetcher()
+
 func (s *Server) Convert(ctx context.Context, convertInput *ConvertInput) (*ConvertValue, error) {
-	currencyValue := scrapeCurrencyConverter(convertInput)
+	currencyValue := fetchCurrency(convertInput)
 	return &ConvertValue{Value: currencyValue}, nil
 }
