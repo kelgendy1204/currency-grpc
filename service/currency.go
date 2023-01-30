@@ -15,9 +15,10 @@ type Server struct {
 }
 
 func scrapeCurrencyConverter(convertInput *ConvertInput) string {
-	fmt.Println("Fetch online")
 	fromCurrency := convertInput.From
 	toCurrency := convertInput.To
+
+	fmt.Println("Fetch from " + fromCurrency + " to " + toCurrency)
 
 	res, err := http.Get("https://www.currency.me.uk/convert/" + fromCurrency + "/" + toCurrency)
 
