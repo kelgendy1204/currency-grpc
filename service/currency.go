@@ -49,7 +49,7 @@ type currencyData struct {
 	value string
 }
 
-func getCurrencyFetcher() func(*ConvertInput) string {
+func GetCurrencyFetcher() func(*ConvertInput) string {
 	cache := make(map[string]currencyData)
 
 	return func(convertInput *ConvertInput) string {
@@ -78,7 +78,7 @@ func getCurrencyFetcher() func(*ConvertInput) string {
 	}
 }
 
-var fetchCurrency = getCurrencyFetcher()
+var fetchCurrency = GetCurrencyFetcher()
 
 func (s *Server) Convert(ctx context.Context, convertInput *ConvertInput) (*ConvertValue, error) {
 	currencyValue := fetchCurrency(convertInput)
