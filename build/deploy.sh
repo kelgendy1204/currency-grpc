@@ -1,6 +1,6 @@
 #!/bin/bash
 
-REGISTRY=registry.gitlab.com/sales-cms-dashboard/currency-grpc
+REGISTRY=elgendy1204/curr-service
 
 main_folder_check() {
     if [[ ! -f "./go.mod" ]]; then
@@ -28,9 +28,10 @@ env_file_source() {
 }
 
 docker_image_build() {
-    docker build \
-        -t $REGISTRY:latest \
-        -f build/Dockerfile .
+    docker build -t $REGISTRY:latest -f build/Dockerfile .
+}
+
+push_to_registery() {
     docker push $REGISTRY --all-tags
 }
 
@@ -53,4 +54,5 @@ main_branch_check
 main_folder_check
 env_file_source
 docker_image_build
+push_to_registery
 server_deploy
